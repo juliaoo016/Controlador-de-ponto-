@@ -1,4 +1,3 @@
-
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -166,8 +165,8 @@
 
   const usuarios = [
     { nome: "julio", senha: "123", cargo: "Moderador Supervisor" },
-    { nome: "24173739800", senha: "2535", cargo: "Fundador" }
-    { nome: "pedro", senha: "2535", cargo: "Moderador Iniciante" }
+    { nome: "24173739800", senha: "2535", cargo: "Fundador" },
+    { nome: "pedro", senha: "123",cargo: "Moderador Supervisor" },
   ];
 
   function login() {
