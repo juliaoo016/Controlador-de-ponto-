@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle de Ponto - Administração</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1, h2 {
+      margin-bottom: 20px;
+    }
+    .input-field {
+      margin: 10px 0;
+    }
+    .input-field input, .input-field select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .log-table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    .log-table th, .log-table td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    .log-table th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #registroPonto {
+      display: none;
+    }
+    #painelFundador {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="loginSection">
+  <h1>Controle de Ponto</h1>
+  <div class="input-field">
+    <input type="text" id="username" placeholder="Nome de usuário" required>
+  </div>
+  <div class="input-field">
+    <input type="password" id="password" placeholder="Senha" required>
+  </div>
+  <div class="input-field">
+    <select id="cargo">
+      <option value="">Selecione o Cargo</option>
+      <option value="Moderador Iniciante">Moderador Iniciante</option>
+      <option value="Moderador Líder">Moderador Líder</option>
+      <option value="Moderador Supervisor">Moderador Supervisor</option>
+      <option value="Administrador Líder">Administrador Líder</option>
+      <option value="Administrador Sub Gerente">Administrador Sub Gerente</option>
+      <option value="Administrador Gerente">Administrador Gerente</option>
+      <option value="Fundador">Fundador</option>
+    </select>
+  </div>
+  <button class="button" onclick="login()">Login</button>
+</div>
+
+<div class="container" id="registroPonto">
+  <h1>Controle de Ponto</h1>
+  <div class="input-field">
+    <input type="text" id="nome" placeholder="Nome do Jogador" disabled>
+  </div>
+  <div class="input-field">
+    <input type="text" id="cargoUsuario" placeholder="Cargo" disabled>
+  </div>
+  <button class="button" onclick="registrarEntrada()">Iniciar Turno</button>
+  <button class="button" onclick="registrarSaida()">Finalizar Turno</button>
+
+  <h2>Histórico de Ponto</h2>
+  <table class="log-table" id="tabelaPonto">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Cargo</th>
+        <th>Entrada</th>
+        <th>Saída</th>
+        <th>Horas Trabalhadas</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button class="button" onclick="exportarParaCSV()">Exportar para CSV</button>
+</div>
+
+<div class="container" id="painelFundador">
+  <h1>Painel do Fundador</h1>
+
+  <h2>Histórico de Ponto</h2>
+  <table class="log-table" id="tabelaPontoFundador">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Cargo</th>
+        <th>Entrada</th>
+        <th>Saída</th>
+        <th>Horas Trabalhadas</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Cadastro de Novo Usuário</h2>
+  <div class="input-field"><input id="novoNome" placeholder="Nome do usuário"></div>
+  <div class="input-field"><input id="novaSenha" placeholder="Senha do usuário" type="password"></div>
+  <div class="input-field">
+    <select id="novoCargo">
+      <option value="">Selecione o Cargo</option>
+      <option value="Moderador Iniciante">Moderador Iniciante</option>
+      <option value="Moderador Líder">Moderador Líder</option>
+      <option value="Moderador Supervisor">Moderador Supervisor</option>
+      <option value="Administrador Líder">Administrador Líder</option>
+      <option value="Administrador Sub Gerente">Administrador Sub Gerente</option>
+      <option value="Administrador Gerente">Administrador Gerente</option>
+    </select>
+  </div>
+  <button class="button" onclick="cadastrarUsuario()">Cadastrar</button>
+</div>
+
+<script>
+  let registros = [];
+  let usuarioLogado = null;
+
+  const usuarios = [
+    { nome: "julio", senha: "123", cargo: "Moderador Supervisor" },
+    { nome: "24173739800", senha: "2535", cargo: "Fundador" }
+  ];
+
+  function login() {
+    let nome = document.getElementById('username').value;
+    let senha = document.getElementById('password').value;
+    let cargo = document.getElementById('cargo').value;
+
+    let usuario = usuarios.find(user => user.nome === nome && user.senha === senha && user.cargo === cargo);
+
+    if (usuario) {
+      usuarioLogado = usuario;
+      document.getElementById('loginSection').style.display = 'none';
+
+      if (usuario.cargo === "Fundador") {
+        document.getElementById('painelFundador').style.display = 'block';
+        atualizarTabelaFundador();
+      } else {
+        document.getElementById('registroPonto').style.display = 'block';
+        document.getElementById('nome').value = usuario.nome;
+        document.getElementById('cargoUsuario').value = usuario.cargo;
+      }
+
+      alert("Login realizado com sucesso!");
+    } else {
+      alert("Usuário ou senha incorretos ou cargo inválido.");
+    }
+  }
+
+  function registrarEntrada() {
+    if (!usuarioLogado) return;
+
+    let entrada = new Date();
+    registros.push({
+      nome: usuarioLogado.nome,
+      cargo: usuarioLogado.cargo,
+      entrada: entrada.toLocaleString(),
+      saida: "-",
+      horasTrabalhadas: "-"
+    });
+    atualizarTabela();
+    alert("Turno iniciado!");
+  }
+
+  function registrarSaida() {
+    if (!usuarioLogado) return;
+
+    for (let i = registros.length - 1; i >= 0; i--) {
+      if (registros[i].nome === usuarioLogado.nome && registros[i].saida === "-") {
+        let saida = new Date();
+        registros[i].saida = saida.toLocaleString();
+        registros[i].horasTrabalhadas = calcularHoras(registros[i].entrada, saida.toLocaleString());
+        break;
+      }
+    }
+    atualizarTabela();
+    alert("Turno finalizado!");
+  }
+
+  function calcularHoras(entrada, saida) {
+    let e = new Date(entrada);
+    let s = new Date(saida);
+    let ms = s - e;
+    let h = Math.floor(ms / 1000 / 60 / 60);
+    let m = Math.floor((ms / 1000 / 60) % 60);
+    return `${h}h ${m}m`;
+  }
+
+  function atualizarTabela() {
+    let tabela = document.getElementById("tabelaPonto").getElementsByTagName("tbody")[0];
+    tabela.innerHTML = "";
+    registros.forEach(r => {
+      let row = tabela.insertRow();
+      row.insertCell(0).innerText = r.nome;
+      row.insertCell(1).innerText = r.cargo;
+      row.insertCell(2).innerText = r.entrada;
+      row.insertCell(3).innerText = r.saida;
+      row.insertCell(4).innerText = r.horasTrabalhadas;
+    });
+  }
+
+  function atualizarTabelaFundador() {
+    let tabela = document.getElementById("tabelaPontoFundador").getElementsByTagName("tbody")[0];
+    tabela.innerHTML = "";
+    registros.forEach(r => {
+      let row = tabela.insertRow();
+      row.insertCell(0).innerText = r.nome;
+      row.insertCell(1).innerText = r.cargo;
+      row.insertCell(2).innerText = r.entrada;
+      row.insertCell(3).innerText = r.saida;
+      row.insertCell(4).innerText = r.horasTrabalhadas;
+    });
+  }
+
+  function exportarParaCSV() {
+    let csv = "Nome,Cargo,Entrada,Saída,Horas Trabalhadas\n";
+    registros.forEach(r => {
+      csv += `${r.nome},${r.cargo},${r.entrada},${r.saida},${r.horasTrabalhadas}\n`;
+    });
+
+    let link = document.createElement('a');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+    link.setAttribute('download', 'registros_de_ponto.csv');
+    link.click();
+  }
+
+  function cadastrarUsuario() {
+    const nome = document.getElementById('novoNome').value.trim();
+    const senha = document.getElementById('novaSenha').value.trim();
+    const cargo = document.getElementById('novoCargo').value;
+
+    if (nome && senha && cargo) {
+      usuarios.push({ nome, senha, cargo });
+      alert("Usuário cadastrado com sucesso!");
+      document.getElementById('novoNome').value = '';
+      document.getElementById('novaSenha').value = '';
+      document.getElementById('novoCargo').value = '';
+    } else {
+      alert("Preencha todos os campos!");
+    }
+  }
+</script>
+
+</body>
+</html>
