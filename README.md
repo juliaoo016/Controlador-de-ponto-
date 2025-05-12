@@ -167,6 +167,7 @@
     { nome: "julio", senha: "123", cargo: "Moderador Supervisor" },
     { nome: "24173739800", senha: "2535", cargo: "Fundador" },
     { nome: "pedro", senha: "123",cargo: "Moderador Supervisor" },
+  
   ];
 
   function login() {
