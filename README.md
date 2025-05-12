@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -167,11 +167,11 @@
   const usuarios = [
     { nome: "julio", senha: "123", cargo: "Moderador Supervisor" },
     { nome: "24173739800", senha: "2535", cargo: "Fundador" }
-    { nome: "Pedro", senha: "123", cargo: "Moderador Iniciante" }
+    { nome: "pedro", senha: "2535", cargo: "Moderador Iniciante" }
   ];
 
   function login() {
-    let nome = document.getElementById('username').value;
+    let nome = document.getElementById('username').value; 
     let senha = document.getElementById('password').value;
     let cargo = document.getElementById('cargo').value;
 
